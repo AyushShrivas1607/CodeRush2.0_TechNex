@@ -1,0 +1,25 @@
+{
+  "LOW_BATTERY": {
+    "command": "SWITCH_BACKUP_POWER",
+    "recommendation": "Reduce payload power and enable backup battery.",
+    "severity": "HIGH"
+  },
+
+  "HIGH_TEMPERATURE": {
+    "command": "ENABLE_COOLING_MODE",
+    "recommendation": "Activate cooling and reduce processor load.",
+    "severity": "HIGH"
+  },
+
+  "LOW_SIGNAL": {
+    "command": "REALIGN_ANTENNA",
+    "recommendation": "Adjust antenna orientation.",
+    "severity": "MEDIUM"
+  },
+
+  "LOW_FUEL": {
+    "command": "LIMIT_THRUSTER_USAGE",
+    "recommendation": "Reduce maneuver frequency.",
+    "severity": "MEDIUM"
+  }
+}
