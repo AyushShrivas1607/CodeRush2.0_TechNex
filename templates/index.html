@@ -1,0 +1,3669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURORA-7 | Space Mission Operations Center</title>
+    <style>
+        /* =========================================================
+           THEME VARIABLES
+        ========================================================= */
+        :root {
+            --bg: #050912;
+            --bg-secondary: #080f1c;
+            --panel: rgba(10, 18, 32, 0.92);
+            --panel-2: #0d1728;
+
+            --border: #1d304b;
+            --border-light: #263c5c;
+
+            --text: #e8f1ff;
+            --muted: #8294ad;
+
+            --cyan: #35d9ff;
+            --blue: #4f8cff;
+            --green: #32e875;
+            --yellow: #ffc857;
+            --orange: #ff9d42;
+            --red: #ff5263;
+            --purple: #a77cff;
+
+            --shadow:
+                0 10px 30px rgba(0, 0, 0, 0.35);
+
+            --glow-cyan:
+                0 0 18px rgba(53, 217, 255, 0.25);
+
+            --radius: 12px;
+        }
+
+        body.light {
+            --bg: #eef4fa;
+            --bg-secondary: #e3ebf4;
+            --panel: #ffffff;
+            --panel-2: #f5f8fc;
+
+            --border: #d4deea;
+            --border-light: #c0ccda;
+
+            --text: #142033;
+            --muted: #637187;
+
+            --cyan: #008db4;
+            --blue: #326ee8;
+            --green: #149447;
+            --yellow: #c58a00;
+            --orange: #d76c00;
+            --red: #d83245;
+            --purple: #7349c6;
+
+            --shadow:
+                0 10px 25px rgba(33, 52, 76, 0.12);
+
+            --glow-cyan:
+                0 0 15px rgba(0, 141, 180, 0.12);
+        }
+
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 15% 10%,
+                    rgba(44, 111, 180, 0.10),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 80%,
+                    rgba(118, 60, 180, 0.08),
+                    transparent 30%
+                ),
+                var(--bg);
+
+            color: var(--text);
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            transition:
+                background 0.3s ease,
+                color 0.3s ease;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =========================================================
+           TOP HEADER
+        ========================================================= */
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            height: 74px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 24px;
+
+            background: rgba(5, 9, 18, 0.92);
+            backdrop-filter: blur(14px);
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        body.light .topbar {
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(53, 217, 255, 0.18),
+                    rgba(79, 140, 255, 0.10)
+                );
+
+            border: 1px solid rgba(53, 217, 255, 0.35);
+
+            color: var(--cyan);
+            font-size: 22px;
+
+            box-shadow: var(--glow-cyan);
+        }
+
+        .brand h1 {
+            margin: 0;
+
+            font-size: 17px;
+            letter-spacing: 1.4px;
+            font-weight: 800;
+        }
+
+        .brand p {
+            margin: 3px 0 0;
+
+            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* =========================================================
+           STATUS
+        ========================================================= */
+        .mission-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 13px;
+
+            border: 1px solid rgba(50, 232, 117, 0.25);
+            border-radius: 20px;
+
+            color: var(--green);
+            background: rgba(50, 232, 117, 0.06);
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+
+            background: var(--green);
+            border-radius: 50%;
+
+            box-shadow: 0 0 10px var(--green);
+
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.35;
+            }
+        }
+
+        .mission-clock {
+            min-width: 105px;
+
+            color: var(--cyan);
+
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* =========================================================
+           THEME BUTTON
+        ========================================================= */
+        .theme-button {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 10px;
+
+            border: 1px solid var(--border-light);
+            background: var(--panel);
+
+            color: var(--text);
+
+            font-size: 18px;
+
+            transition: 0.2s;
+        }
+        .theme-button:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            transform: translateY(-1px);
+        }
+        /* =========================================================
+           MAIN
+        ========================================================= */
+        .container {
+            width: min(1500px, calc(100% - 36px));
+
+            margin: 24px auto 50px;
+        }
+        /* =========================================================
+           SECTION HEADER
+        ========================================================= */
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 12px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+
+            color: var(--muted);
+        }
+
+        .section-heading span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* =========================================================
+           CARDS
+        ========================================================= */
+
+        .card {
+            background:
+                linear-gradient(
+                    145deg,
+                    var(--panel),
+                    var(--panel-2)
+                );
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            padding: 18px;
+
+            box-shadow: var(--shadow);
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-light);
+        }
+
+        .card h3 {
+            margin: 0 0 15px;
+
+            font-size: 13px;
+            letter-spacing: 0.7px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 15px;
+        }
+
+        .card-title h3 {
+            margin: 0;
+        }
+
+        .card-icon {
+            color: var(--cyan);
+        }
+
+
+        /* =========================================================
+           GRID
+        ========================================================= */
+
+        .grid-3 {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1.45fr
+                1fr;
+
+            gap: 15px;
+        }
+
+        .grid-2 {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 15px;
+
+            margin-top: 15px;
+        }
+
+        .grid-bottom {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1fr
+                1fr;
+
+            gap: 15px;
+
+            margin-top: 15px;
+        }
+
+
+        /* =========================================================
+           DIGITAL TWIN
+        ========================================================= */
+
+        .spacecraft-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 15px;
+        }
+
+        .spacecraft-name {
+            color: var(--cyan);
+
+            font-size: 18px;
+            font-weight: 800;
+
+            letter-spacing: 1px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 5px 9px;
+
+            border-radius: 5px;
+
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.7px;
+        }
+
+        .nominal {
+            color: var(--green);
+            background: rgba(50, 232, 117, 0.10);
+            border: 1px solid rgba(50, 232, 117, 0.25);
+        }
+
+        .warning {
+            color: var(--yellow);
+            background: rgba(255, 200, 87, 0.10);
+            border: 1px solid rgba(255, 200, 87, 0.25);
+        }
+
+        .critical {
+            color: var(--red);
+            background: rgba(255, 82, 99, 0.10);
+            border: 1px solid rgba(255, 82, 99, 0.25);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+
+            padding: 9px 0;
+
+            border-bottom: 1px solid var(--border);
+
+            font-size: 12px;
+        }
+
+        .stat-row:last-child {
+            border-bottom: 0;
+        }
+
+        .stat-row span:first-child {
+            color: var(--muted);
+        }
+
+
+        /* =========================================================
+           TELEMETRY MINI STATS
+        ========================================================= */
+
+        .mini-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 8px;
+
+            margin-top: 15px;
+        }
+
+        .mini-stat {
+            padding: 11px;
+
+            background: rgba(255, 255, 255, 0.025);
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+        }
+
+        body.light .mini-stat {
+            background: rgba(0, 0, 0, 0.025);
+        }
+
+        .mini-stat label {
+            display: block;
+
+            color: var(--muted);
+            font-size: 9px;
+
+            margin-bottom: 5px;
+        }
+
+        .mini-stat strong {
+            font-size: 14px;
+        }
+
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
+        .btn {
+            width: 100%;
+
+            border: 1px solid var(--border-light);
+
+            border-radius: 7px;
+
+            padding: 10px 12px;
+
+            margin-top: 9px;
+
+            color: var(--text);
+
+            background: rgba(255, 255, 255, 0.035);
+
+            transition: 0.2s;
+        }
+
+        body.light .btn {
+            background: rgba(0, 0, 0, 0.025);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            border-color: var(--cyan);
+        }
+
+        .btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+
+        .btn-primary {
+            color: white;
+            background: linear-gradient(135deg, #246ee8, #4c54d8);
+            border-color: #527cf0;
+        }
+
+        .btn-success {
+            color: white;
+            background: linear-gradient(135deg, #168c52, #1eae65);
+            border-color: #31c477;
+        }
+
+        .btn-danger {
+            color: white;
+            background: linear-gradient(135deg, #a9283c, #d23a4d);
+            border-color: #ef5b6c;
+        }
+
+        .btn-warning {
+            color: #15100a;
+            background: var(--yellow);
+            border-color: #ffdb78;
+        }
+
+
+        /* =========================================================
+           INPUTS
+        ========================================================= */
+
+        label {
+            display: block;
+
+            margin-top: 10px;
+            margin-bottom: 5px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        input,
+        select {
+            width: 100%;
+
+            padding: 10px 11px;
+
+            border-radius: 7px;
+
+            border: 1px solid var(--border-light);
+
+            background: var(--bg-secondary);
+
+            color: var(--text);
+
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 2px rgba(53, 217, 255, 0.08);
+        }
+
+
+        /* =========================================================
+           TIMELINE
+        ========================================================= */
+
+        .timeline {
+            position: relative;
+
+            margin-left: 8px;
+        }
+
+        .timeline::before {
+            content: "";
+
+            position: absolute;
+
+            left: 7px;
+            top: 8px;
+            bottom: 8px;
+
+            width: 1px;
+
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+
+            display: flex;
+            gap: 13px;
+
+            padding: 7px 0;
+        }
+
+        .timeline-dot {
+            position: relative;
+            z-index: 2;
+
+            width: 15px;
+            height: 15px;
+
+            margin-top: 2px;
+
+            border-radius: 50%;
+
+            background: var(--bg);
+
+            border: 2px solid var(--border-light);
+        }
+
+        .timeline-item.active .timeline-dot {
+            border-color: var(--cyan);
+            background: var(--cyan);
+
+            box-shadow: 0 0 10px rgba(53, 217, 255, 0.5);
+        }
+
+        .timeline-item.done .timeline-dot {
+            border-color: var(--green);
+            background: var(--green);
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-time {
+            color: var(--cyan);
+
+            font-family: monospace;
+            font-size: 11px;
+        }
+
+        .timeline-name {
+            margin-top: 2px;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .timeline-desc {
+            margin-top: 2px;
+
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+
+        /* =========================================================
+           TELEMETRY GRAPH
+        ========================================================= */
+
+        .graph-container {
+            height: 210px;
+
+            padding: 10px;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            background:
+                linear-gradient(
+                    rgba(255,255,255,0.02) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.02) 1px,
+                    transparent 1px
+                );
+
+            background-size: 25px 25px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+
+        /* =========================================================
+           ANOMALY
+        ========================================================= */
+
+        .anomaly-box {
+            padding: 13px;
+
+            border-radius: 8px;
+
+            border: 1px solid rgba(255, 82, 99, 0.25);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 82, 99, 0.08),
+                    transparent
+                );
+        }
+
+        .anomaly-title {
+            display: flex;
+            justify-content: space-between;
+
+            color: var(--red);
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .confidence {
+            margin-top: 12px;
+        }
+
+        .confidence-header {
+            display: flex;
+            justify-content: space-between;
+
+            color: var(--muted);
+
+            font-size: 10px;
+        }
+
+        .progress {
+            height: 6px;
+
+            margin-top: 5px;
+
+            border-radius: 10px;
+
+            background: var(--border);
+            overflow: hidden;
+        }
+
+        .progress span {
+            display: block;
+
+            height: 100%;
+
+            border-radius: inherit;
+
+            background: var(--red);
+
+            transition: width 0.5s ease;
+        }
+
+
+        /* =========================================================
+           HYPOTHESES
+        ========================================================= */
+
+        .hypothesis {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 9px 0;
+
+            border-bottom: 1px solid var(--border);
+
+            font-size: 11px;
+        }
+
+        .hypothesis:last-child {
+            border-bottom: 0;
+        }
+
+        .hypothesis-score {
+            color: var(--yellow);
+
+            font-family: monospace;
+        }
+
+
+        /* =========================================================
+           PROCEDURE
+        ========================================================= */
+
+        .procedure-id {
+            color: var(--purple);
+
+            font-family: monospace;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .procedure-step {
+            display: flex;
+            gap: 10px;
+
+            align-items: center;
+
+            padding: 9px 0;
+
+            border-bottom: 1px solid var(--border);
+
+            font-size: 11px;
+        }
+
+        .step-icon {
+            width: 20px;
+            height: 20px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: var(--border);
+
+            font-size: 10px;
+        }
+
+        .step-icon.complete {
+            color: var(--green);
+            background: rgba(50, 232, 117, 0.1);
+        }
+
+        .step-icon.current {
+            color: var(--yellow);
+            background: rgba(255, 200, 87, 0.1);
+        }
+
+
+        /* =========================================================
+           RESOURCES
+        ========================================================= */
+
+        .resource {
+            margin-bottom: 13px;
+        }
+
+        .resource-header {
+            display: flex;
+            justify-content: space-between;
+
+            margin-bottom: 5px;
+
+            font-size: 10px;
+        }
+
+        .resource-header span:first-child {
+            color: var(--muted);
+        }
+
+        .resource-bar {
+            height: 8px;
+
+            border-radius: 20px;
+
+            background: var(--border);
+
+            overflow: hidden;
+        }
+
+        .resource-fill {
+            height: 100%;
+
+            border-radius: inherit;
+
+            transition: width 0.7s ease;
+        }
+
+        .power {
+            background: linear-gradient(90deg, #27b96a, #71e294);
+        }
+
+        .data {
+            background: linear-gradient(90deg, #347cff, #70a4ff);
+        }
+
+        .pointing {
+            background: linear-gradient(90deg, #9c67e8, #c08dff);
+        }
+
+        .thermal {
+            background: linear-gradient(90deg, #ff8d38, #ffca63);
+        }
+
+
+        /* =========================================================
+           AUTHORITY PANEL
+        ========================================================= */
+
+        .authority {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 13px;
+
+            border-radius: 9px;
+
+            border: 1px solid var(--border);
+
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .authority-icon {
+            width: 38px;
+            height: 38px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            color: var(--yellow);
+
+            border: 1px solid rgba(255, 200, 87, 0.25);
+
+            background: rgba(255, 200, 87, 0.08);
+        }
+
+        .authority strong {
+            display: block;
+
+            font-size: 12px;
+        }
+
+        .authority small {
+            display: block;
+
+            margin-top: 3px;
+
+            color: var(--muted);
+            font-size: 9px;
+        }
+
+
+        /* =========================================================
+           AUDIT LOG
+        ========================================================= */
+
+        .audit-card {
+            margin-top: 15px;
+        }
+
+        .audit-log {
+            height: 175px;
+
+            overflow-y: auto;
+
+            padding: 10px;
+
+            border: 1px solid var(--border);
+            border-radius: 8px;
+
+            background: #03070e;
+
+            font-family: monospace;
+            font-size: 10px;
+        }
+
+        body.light .audit-log {
+            background: #f3f6fa;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+
+            border-bottom: 1px dashed rgba(255,255,255,0.05);
+        }
+
+        body.light .log-entry {
+            border-color: rgba(0,0,0,0.06);
+        }
+
+        .log-time {
+            color: var(--muted);
+        }
+
+        .log-system {
+            color: var(--cyan);
+        }
+
+        .log-success {
+            color: var(--green);
+        }
+
+        .log-warning {
+            color: var(--yellow);
+        }
+
+        .log-error {
+            color: var(--red);
+        }
+
+
+        /* =========================================================
+           SIMULATION CONTROL
+        ========================================================= */
+
+        .simulation-control {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 8px;
+        }
+
+        .simulation-state {
+            padding: 10px;
+
+            border-radius: 8px;
+
+            background: rgba(53, 217, 255, 0.05);
+
+            border: 1px solid rgba(53, 217, 255, 0.12);
+        }
+
+        .simulation-state label {
+            margin: 0 0 5px;
+        }
+
+        .simulation-state strong {
+            color: var(--cyan);
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        footer {
+            margin-top: 20px;
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 10px;
+
+            letter-spacing: 0.5px;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1100px) {
+            .grid-3 {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .grid-3 .card:nth-child(3) {
+                grid-column: 1 / -1;
+            }
+
+            .grid-bottom {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 750px) {
+            .topbar {
+                height: auto;
+                padding: 14px;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .grid-3,
+            .grid-2,
+            .grid-bottom {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-3 .card:nth-child(3) {
+                grid-column: auto;
+            }
+
+            .container {
+                width: min(100% - 20px, 700px);
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<!-- =============================================================
+     TOP BAR
+============================================================= -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            ◉
+        </div>
+
+        <div>
+            <h1>SPACE MISSION OPERATIONS CENTER</h1>
+            <p>AURORA-7 / DIGITAL TWIN OPERATIONS CONSOLE</p>
+        </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+        <div class="mission-status">
+            <span class="pulse"></span>
+            SIMULATION ACTIVE
+        </div>
+
+        <div class="mission-clock" id="missionClock">
+            T+00:00:00
+        </div>
+
+        <!-- DARK / LIGHT MODE -->
+        <button
+            class="theme-button"
+            id="themeToggle"
+            onclick="toggleTheme()"
+            title="Change interface theme">
+            ☀
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =============================================================
+     MAIN CONTAINER
+============================================================= -->
+
+<main class="container">
+
+
+    <!-- =========================================================
+         PRIMARY DASHBOARD
+    ========================================================= -->
+
+    <div class="section-heading">
+
+        <h2>Mission Control / Primary Systems</h2>
+
+        <span id="lastUpdate">
+            TELEMETRY UPDATE: --:--:--
+        </span>
+
+    </div>
+
+
+    <div class="grid-3">
+
+
+        <!-- =====================================================
+             DIGITAL TWIN
+        ===================================================== -->
+
+        <div class="card">
+
+            <div class="spacecraft-header">
+
+                <div class="spacecraft-name">
+                    AURORA-7
+                </div>
+
+                <div
+                    id="satMode"
+                    class="badge nominal">
+                    NOMINAL
+                </div>
+
+            </div>
+
+
+            <div class="stat-row">
+                <span>Spacecraft ID</span>
+                <strong>SAT-EX-01</strong>
+            </div>
+
+            <div class="stat-row">
+                <span>Operational Mode</span>
+                <strong id="operationMode">
+                    NOMINAL
+                </strong>
+            </div>
+
+            <div class="stat-row">
+                <span>Thermal Temp</span>
+                <strong id="satTemp">
+                    22.5 °C
+                </strong>
+            </div>
+
+            <div class="stat-row">
+                <span>Battery SoC</span>
+                <strong id="satBattery">
+                    85.4 %
+                </strong>
+            </div>
+
+            <div class="stat-row">
+                <span>Data Storage</span>
+                <strong id="satData">
+                    61.8 %
+                </strong>
+            </div>
+
+            <div class="stat-row">
+                <span>Comm Link</span>
+                <strong id="satComm">
+                    98.1 %
+                </strong>
+            </div>
+
+
+            <div class="mini-grid">
+
+                <div class="mini-stat">
+                    <label>Pointing</label>
+                    <strong id="satPointing">48%</strong>
+                </div>
+
+                <div class="mini-stat">
+                    <label>CPU Load</label>
+                    <strong id="satCPU">31%</strong>
+                </div>
+
+                <div class="mini-stat">
+                    <label>Orbit</label>
+                    <strong>LEO-01</strong>
+                </div>
+
+                <div class="mini-stat">
+                    <label>Simulator</label>
+                    <strong>ONLINE</strong>
+                </div>
+
+            </div>
+
+
+            <!-- FAULT INJECTION -->
+
+            <div style="
+                margin-top:15px;
+                border-top:1px solid var(--border);
+                padding-top:15px;
+            ">
+
+                <label style="color:var(--red)">
+                    Fault Injection Harness
+                </label>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="injectFault('thermal_excursion')">
+
+                    ⚠ Inject Thermal Excursion
+
+                </button>
+
+                <button
+                    class="btn"
+                    onclick="injectFault('packet_loss')">
+
+                    ◌ Simulate Packet Loss
+
+                </button>
+
+                <button
+                    class="btn"
+                    onclick="injectFault('sensor_drift')">
+
+                    ◇ Simulate Sensor Drift
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             MISSION TIMELINE
+        ===================================================== -->
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <h3>
+                    Mission Timeline
+                </h3>
+
+                <span class="card-icon">
+                    ◷
+                </span>
+
+            </div>
+
+
+            <div class="timeline">
+
+                <div class="timeline-item done">
+
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-content">
+
+                        <div class="timeline-time">
+                            18:20
+                        </div>
+
+                        <div class="timeline-name">
+                            System Initialization
+                        </div>
+
+                        <div class="timeline-desc">
+                            Digital twin synchronization completed
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="timeline-item active">
+
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-content">
+
+                        <div class="timeline-time">
+                            18:45
+                        </div>
+
+                        <div class="timeline-name">
+                            Observation Window
+                        </div>
+
+                        <div class="timeline-desc">
+                            High-resolution surface observation
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="timeline-item">
+
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-content">
+
+                        <div class="timeline-time">
+                            19:08
+                        </div>
+
+                        <div class="timeline-name">
+                            Instrument Calibration
+                        </div>
+
+                        <div class="timeline-desc">
+                            Spectrometer calibration sequence
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="timeline-item">
+
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-content">
+
+                        <div class="timeline-time">
+                            19:31
+                        </div>
+
+                        <div class="timeline-name">
+                            Ground Station Downlink
+                        </div>
+
+                        <div class="timeline-desc">
+                            Telemetry + science data transfer
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="timeline-item">
+
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-content">
+
+                        <div class="timeline-time">
+                            19:46
+                        </div>
+
+                        <div class="timeline-name">
+                            Housekeeping
+                        </div>
+
+                        <div class="timeline-desc">
+                            Routine subsystem maintenance
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="timeline-item">
+
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-content">
+
+                        <div class="timeline-time">
+                            20:10
+                        </div>
+
+                        <div class="timeline-name">
+                            Safe Configuration Check
+                        </div>
+
+                        <div class="timeline-desc">
+                            Post-operation health verification
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div style="
+                margin-top:20px;
+                padding-top:15px;
+                border-top:1px solid var(--border);
+            ">
+
+                <label>
+                    Simulation State
+                </label>
+
+                <div class="simulation-control">
+
+                    <div class="simulation-state">
+
+                        <label>Mission Time</label>
+
+                        <strong id="simTime">
+                            T+18:42:16
+                        </strong>
+
+                    </div>
+
+                    <div class="simulation-state">
+
+                        <label>Speed</label>
+
+                        <select id="simSpeed" onchange="changeSimSpeed()">
+
+                            <option value="1">
+                                1× Real Time
+                            </option>
+
+                            <option value="2">
+                                2× Accelerated
+                            </option>
+
+                            <option value="5">
+                                5× Accelerated
+                            </option>
+
+                            <option value="10">
+                                10× Accelerated
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="resetSimulation()">
+
+                    ↻ Reset Simulation
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             OPERATOR AUTHORITY
+        ===================================================== -->
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <h3>
+                    Operator Authority
+                </h3>
+
+                <span class="card-icon">
+                    ◈
+                </span>
+
+            </div>
+
+
+            <div class="authority">
+
+                <div class="authority-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <strong id="authorityStatus">
+                        UNVERIFIED
+                    </strong>
+
+                    <small id="authorityEmail">
+                        No verified operator session
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <label>
+                Director Email
+            </label>
+
+            <input
+                type="email"
+                id="operatorEmail"
+                value="director.smith@spaceops.org"
+                placeholder="operator@example.com"
+            >
+
+
+            <button
+                class="btn btn-primary"
+                onclick="apiCallRequestPasskey()">
+
+                1. Request SMTP OOB Code
+
+            </button>
+
+
+            <label>
+                2-Step Verification Code
+            </label>
+
+            <input
+                type="text"
+                id="twoStepCode"
+                maxlength="6"
+                inputmode="numeric"
+                placeholder="Enter 6-digit code"
+                style="
+                    letter-spacing:5px;
+                    text-align:center;
+                    font-weight:bold;
+                "
+            >
+
+
+            <button
+                class="btn btn-primary"
+                onclick="apiCallVerify2SV()">
+
+                2. Authenticate Session
+
+            </button>
+
+
+            <div
+                id="securityStatusBadge"
+                class="badge warning"
+                style="
+                    width:100%;
+                    margin-top:12px;
+                ">
+
+                JWT SESSION IDLE
+
+            </div>
+
+
+            <button
+                id="authBtn"
+                class="btn btn-success"
+                onclick="apiExecuteProcedure()"
+                disabled>
+
+                🔐 Execute Approved Procedure
+
+            </button>
+
+
+            <p style="
+                color:var(--muted);
+                font-size:9px;
+                line-height:1.5;
+                margin-top:10px;
+            ">
+
+                Safety boundary: commands are simulation-only
+                and require explicit operator verification.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         TELEMETRY + ANOMALY
+    ========================================================= -->
+
+    <div class="grid-2">
+
+
+        <!-- TELEMETRY -->
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <h3>
+                    Live Telemetry
+                </h3>
+
+                <span
+                    class="badge nominal">
+                    STREAMING
+                </span>
+
+            </div>
+
+
+            <div class="graph-container">
+
+                <canvas id="telemetryCanvas"></canvas>
+
+            </div>
+
+            
+
+            <div class="mini-grid">
+
+                <div class="mini-stat">
+
+                    <label>Thermal Trend</label>
+
+                    <strong id="thermalTrend">
+                        +0.02 °C/min
+                    </strong>
+
+                </div>
+
+                <div class="mini-stat">
+
+                    <label>Battery Trend</label>
+
+                    <strong>
+                        -0.04 %/min
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ANOMALY -->
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <h3>
+                    Anomaly & Diagnosis
+                </h3>
+
+                <span
+                    id="anomalyIndicator"
+                    class="badge nominal">
+
+                    NO ACTIVE ANOMALY
+
+                </span>
+
+            </div>
+
+
+            <div id="diagnosisContainer">
+
+                <div
+                    style="
+                        padding:15px;
+                        color:var(--muted);
+                        text-align:center;
+                        font-size:11px;
+                    ">
+
+                    All spacecraft subsystems nominal.
+
+                    <br><br>
+
+                    Use the fault injection harness to
+                    test anomaly detection.
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         PROCEDURE + RESOURCES + SIMULATION
+    ========================================================= -->
+
+    <div class="grid-bottom">
+        <!-- PROCEDURE ENGINE -->
+        <div class="card">
+
+            <div class="card-title">
+
+                <h3>
+                    Recommended Procedure
+                </h3>
+
+                <span class="card-icon">
+                    ⚙
+                </span>
+
+            </div>
+
+            <div class="procedure-id">
+                PROC-THERMAL-RECOVERY-03
+            </div>
+
+            <div style="
+                color:var(--muted);
+                font-size:10px;
+                margin:5px 0 12px;
+            ">
+
+                Version 3.2 / Simulation Runbook
+
+            </div>
+
+            <div class="procedure-step">
+
+                <div class="step-icon complete">
+                    ✓
+                </div>
+
+                <div>
+                    Verify thermal sensor agreement
+                </div>
+
+            </div>
+
+            <div class="procedure-step">
+
+                <div class="step-icon current">
+                    →
+                </div>
+
+                <div>
+                    Reduce simulated instrument load
+                </div>
+
+            </div>
+
+
+            <div class="procedure-step">
+
+                <div class="step-icon">
+                    3
+                </div>
+
+                <div>
+                    Enter controlled thermal recovery
+                </div>
+
+            </div>
+
+
+            <div class="procedure-step">
+
+                <div class="step-icon">
+                    4
+                </div>
+
+                <div>
+                    Validate thermal stabilization
+                </div>
+
+            </div>
+
+            <button
+                class="btn btn-warning"
+                onclick="previewProcedure()">
+
+                ◉ Preview Procedure
+
+            </button>
+
+        </div>
+
+        <!-- RESOURCE UTILIZATION -->
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <h3>
+                    Resource Utilization
+                </h3>
+
+                <span class="card-icon">
+                    ◫
+                </span>
+
+            </div>
+
+            <div class="resource">
+
+                <div class="resource-header">
+
+                    <span>
+                        POWER
+                    </span>
+
+                    <strong id="powerValue">
+                        36%
+                    </strong>
+
+                </div>
+
+                <div class="resource-bar">
+
+                    <div
+                        id="powerBar"
+                        class="resource-fill power"
+                        style="width:36%">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="resource">
+
+                <div class="resource-header">
+
+                    <span>
+                        DATA STORAGE
+                    </span>
+
+                    <strong id="dataValue">
+                        62%
+                    </strong>
+
+                </div>
+
+                <div class="resource-bar">
+
+                    <div
+                        id="dataBar"
+                        class="resource-fill data"
+                        style="width:62%">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="resource">
+
+                <div class="resource-header">
+
+                    <span>
+                        POINTING
+                    </span>
+
+                    <strong id="pointingValue">
+                        48%
+                    </strong>
+
+                </div>
+
+                <div class="resource-bar">
+
+                    <div
+                        id="pointingBar"
+                        class="resource-fill pointing"
+                        style="width:48%">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="resource">
+
+                <div class="resource-header">
+
+                    <span>
+                        THERMAL
+                    </span>
+
+                    <strong id="thermalValue">
+                        28%
+                    </strong>
+
+                </div>
+
+                <div class="resource-bar">
+
+                    <div
+                        id="thermalBar"
+                        class="resource-fill thermal"
+                        style="width:28%">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div style="
+                margin-top:18px;
+                padding-top:12px;
+                border-top:1px solid var(--border);
+            ">
+
+                <div class="hypothesis">
+
+                    <span>
+                        Power Margin
+                    </span>
+
+                    <span class="hypothesis-score">
+                        HEALTHY
+                    </span>
+
+                </div>
+
+                <div class="hypothesis">
+
+                    <span>
+                        Communication Window
+                    </span>
+
+                    <span class="hypothesis-score">
+                        42 MIN
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- SIMULATION / FAULT CENTER -->
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <h3>
+                    Digital Twin Control
+                </h3>
+
+                <span class="card-icon">
+                    ◉
+                </span>
+
+            </div>
+
+            <div class="simulation-state">
+
+                <label>
+                    Current Simulation
+                </label>
+
+                <strong id="simulationStatus">
+                    NOMINAL MISSION
+                </strong>
+
+            </div>
+
+
+            <label>
+                Inject Scenario
+            </label>
+
+            <select id="faultSelector">
+
+                <option value="thermal_excursion">
+                    Thermal Excursion
+                </option>
+
+                <option value="packet_loss">
+                    Communication Packet Loss
+                </option>
+
+                <option value="sensor_drift">
+                    Temperature Sensor Drift
+                </option>
+
+                <option value="power_drop">
+                    Battery Power Drop
+                </option>
+
+                <option value="actuator_failure">
+                    Pointing Actuator Failure
+                </option>
+
+            </select>
+
+
+            <button
+                class="btn btn-danger"
+                onclick="runSelectedFault()">
+
+                ⚠ Inject Selected Fault
+
+            </button>
+
+
+            <button
+                class="btn"
+                onclick="clearFault()">
+
+                ✓ Clear Fault / Restore Nominal
+
+            </button>
+
+
+            <div style="
+                margin-top:15px;
+                padding:10px;
+
+                border-radius:8px;
+
+                background:rgba(50,232,117,0.04);
+
+                border:1px solid rgba(50,232,117,0.12);
+
+                color:var(--muted);
+
+                font-size:9px;
+
+                line-height:1.5;
+            ">
+
+                DIGITAL TWIN SAFETY BOUNDARY
+
+                <br><br>
+
+                All actions on this console are simulated.
+                No live spacecraft or flight hardware is connected.
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         AUDIT LEDGER
+    ========================================================= -->
+
+    <div class="card audit-card">
+
+        <div class="card-title">
+
+            <h3>
+                Backend API Audit Ledger
+            </h3>
+
+            <span
+                class="badge nominal">
+                REPLAYABLE
+            </span>
+
+        </div>
+
+
+        <div id="auditLog" class="audit-log">
+
+            <div class="log-entry">
+                <span class="log-time">
+                    [00:00:01]
+                </span>
+
+                <span class="log-system">
+                    [SYSTEM]
+                </span>
+
+                Initialized AURORA-7 digital twin.
+            </div>
+
+
+            <div class="log-entry">
+
+                <span class="log-time">
+                    [00:00:02]
+                </span>
+
+                <span class="log-system">
+                    [TELEMETRY]
+                </span>
+
+                Telemetry stream synchronized.
+            </div>
+
+
+            <div class="log-entry">
+
+                <span class="log-time">
+                    [00:00:03]
+                </span>
+
+                <span class="log-system">
+                    [PLANNER]
+                </span>
+
+                Constraint-aware mission timeline loaded.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <footer>
+
+        AURORA-7 SPACE MISSION OPERATIONS CENTER
+        · SIMULATION-FIRST ARCHITECTURE
+        · OPERATOR AUTHORITY REQUIRED
+
+    </footer>
+
+</main>
+
+
+<script>
+
+/* =============================================================
+   GLOBAL STATE
+============================================================= */
+
+let jwtToken = null;
+
+let missionSeconds = (18 * 3600) + (42 * 60) + 16;
+
+let simulationSpeed = 1;
+
+let currentFault = null;
+
+let temperature = 22.5;
+
+let battery = 85.4;
+
+let dataStorage = 61.8;
+
+let commLink = 98.1;
+
+let pointing = 48;
+
+let cpu = 31;
+
+let telemetryData = [];
+
+let theme = localStorage.getItem("spaceops-theme") || "dark";
+
+
+/* =============================================================
+   THEME
+============================================================= */
+
+function applyTheme() {
+
+    if (theme === "light") {
+
+        document.body.classList.add("light");
+
+        document.getElementById("themeToggle").textContent = "🌙";
+
+    } else {
+
+        document.body.classList.remove("light");
+
+        document.getElementById("themeToggle").textContent = "☀";
+
+    }
+
+}
+
+
+function toggleTheme() {
+
+    theme = theme === "dark"
+        ? "light"
+        : "dark";
+
+    localStorage.setItem(
+        "spaceops-theme",
+        theme
+    );
+
+    applyTheme();
+
+    addLog(
+        "UI",
+        "Interface theme changed to " + theme.toUpperCase(),
+        "system"
+    );
+
+}
+
+
+/* =============================================================
+   MISSION CLOCK
+============================================================= */
+
+function formatMissionTime(seconds) {
+
+    seconds = Math.floor(seconds);
+
+    const h = Math.floor(seconds / 3600);
+
+    const m = Math.floor(
+        (seconds % 3600) / 60
+    );
+
+    const s = seconds % 60;
+
+    return "T+"
+        + String(h).padStart(2, "0")
+        + ":"
+        + String(m).padStart(2, "0")
+        + ":"
+        + String(s).padStart(2, "0");
+}
+
+
+setInterval(() => {
+
+    missionSeconds += simulationSpeed;
+
+    const time =
+        formatMissionTime(missionSeconds);
+
+    document.getElementById(
+        "missionClock"
+    ).textContent = time;
+
+    document.getElementById(
+        "simTime"
+    ).textContent = time;
+
+}, 1000);
+
+
+/* =============================================================
+   SIMULATION SPEED
+============================================================= */
+
+function changeSimSpeed() {
+
+    simulationSpeed = Number(
+        document.getElementById("simSpeed").value
+    );
+
+    addLog(
+        "SIM",
+        "Simulation speed changed to "
+        + simulationSpeed
+        + "×",
+        "system"
+    );
+
+}
+
+
+function resetSimulation() {
+
+    missionSeconds =
+        (18 * 3600) +
+        (42 * 60) +
+        16;
+
+    temperature = 22.5;
+
+    battery = 85.4;
+
+    dataStorage = 61.8;
+
+    commLink = 98.1;
+
+    pointing = 48;
+
+    cpu = 31;
+
+    currentFault = null;
+
+    document.getElementById(
+        "simulationStatus"
+    ).textContent = "NOMINAL MISSION";
+
+    updateTelemetryUI();
+
+    clearAnomaly();
+
+    addLog(
+        "SIM",
+        "Digital twin reset to nominal state.",
+        "success"
+    );
+
+}
+
+
+/* =============================================================
+   TELEMETRY
+============================================================= */
+
+for (let i = 0; i < 80; i++) {
+
+    telemetryData.push(
+        22.3 + Math.random() * 0.4
+    );
+
+}
+
+
+function updateTelemetry() {
+
+    if (currentFault === "thermal_excursion") {
+
+        temperature +=
+            0.03 + Math.random() * 0.04;
+
+        if (temperature > 78) {
+            temperature = 78;
+        }
+
+    } else {
+
+        temperature +=
+            (22.5 - temperature) * 0.04
+            + (Math.random() - 0.5) * 0.08;
+
+    }
+
+
+    battery -=
+        0.001 * simulationSpeed;
+
+    if (battery < 0) {
+        battery = 0;
+    }
+
+
+    if (currentFault === "packet_loss") {
+
+        commLink =
+            Math.max(
+                55,
+                commLink - Math.random() * 0.5
+            );
+
+    } else {
+
+        commLink +=
+            (98.1 - commLink) * 0.05;
+
+    }
+
+
+    if (currentFault === "power_drop") {
+
+        battery =
+            Math.max(
+                20,
+                battery - 0.03
+            );
+
+    }
+
+
+    if (currentFault === "actuator_failure") {
+
+        pointing =
+            Math.max(
+                5,
+                pointing - 0.1
+            );
+
+    }
+
+
+    telemetryData.push(temperature);
+
+    if (telemetryData.length > 100) {
+        telemetryData.shift();
+    }
+
+
+    updateTelemetryUI();
+
+    drawTelemetry();
+
+}
+
+
+function updateTelemetryUI() {
+
+    document.getElementById(
+        "satTemp"
+    ).textContent =
+        temperature.toFixed(1) + " °C";
+
+
+    document.getElementById(
+        "satBattery"
+    ).textContent =
+        battery.toFixed(1) + " %";
+
+
+    document.getElementById(
+        "satData"
+    ).textContent =
+        dataStorage.toFixed(1) + " %";
+
+
+    document.getElementById(
+        "satComm"
+    ).textContent =
+        commLink.toFixed(1) + " %";
+
+
+    document.getElementById(
+        "satPointing"
+    ).textContent =
+        Math.round(pointing) + "%";
+
+
+    document.getElementById(
+        "satCPU"
+    ).textContent =
+        cpu + "%";
+
+
+    document.getElementById(
+        "lastUpdate"
+    ).textContent =
+        "TELEMETRY UPDATE: "
+        + new Date().toLocaleTimeString();
+
+
+    updateResourceBars();
+
+}
+
+
+setInterval(
+    updateTelemetry,
+    1000
+);
+
+
+/* =============================================================
+   RESOURCE BARS
+============================================================= */
+
+function updateResourceBars() {
+
+    const power =
+        Math.round(
+            100 - battery
+        );
+
+    const thermal =
+        Math.min(
+            100,
+            Math.max(
+                10,
+                ((temperature - 20) / 70) * 100
+            )
+        );
+
+
+    document.getElementById(
+        "powerValue"
+    ).textContent =
+        power + "%";
+
+    document.getElementById(
+        "powerBar"
+    ).style.width =
+        power + "%";
+
+
+    document.getElementById(
+        "dataValue"
+    ).textContent =
+        Math.round(dataStorage) + "%";
+
+    document.getElementById(
+        "dataBar"
+    ).style.width =
+        dataStorage + "%";
+
+
+    document.getElementById(
+        "pointingValue"
+    ).textContent =
+        Math.round(pointing) + "%";
+
+    document.getElementById(
+        "pointingBar"
+    ).style.width =
+        pointing + "%";
+
+
+    document.getElementById(
+        "thermalValue"
+    ).textContent =
+        Math.round(thermal) + "%";
+
+    document.getElementById(
+        "thermalBar"
+    ).style.width =
+        thermal + "%";
+
+}
+
+
+/* =============================================================
+   GRAPH
+============================================================= */
+
+function drawTelemetry() {
+
+    const canvas =
+        document.getElementById(
+            "telemetryCanvas"
+        );
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    const dpr =
+        window.devicePixelRatio || 1;
+
+
+    canvas.width =
+        rect.width * dpr;
+
+    canvas.height =
+        rect.height * dpr;
+
+
+    const ctx =
+        canvas.getContext("2d");
+
+    ctx.scale(dpr, dpr);
+
+
+    const width = rect.width;
+
+    const height = rect.height;
+
+
+    const isLight =
+        document.body.classList.contains("light");
+
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /* GRID */
+
+    ctx.strokeStyle =
+        isLight
+            ? "rgba(0,0,0,0.08)"
+            : "rgba(255,255,255,0.07)";
+
+    ctx.lineWidth = 1;
+
+
+    for (
+        let y = 20;
+        y < height;
+        y += 30
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(0, y);
+
+        ctx.lineTo(width, y);
+
+        ctx.stroke();
+
+    }
+
+
+    /* LINE */
+
+    const min = 18;
+
+    const max = 85;
+
+
+    ctx.beginPath();
+
+
+    telemetryData.forEach(
+        (value, index) => {
+
+            const x =
+                index /
+                (telemetryData.length - 1)
+                * width;
+
+
+            const normalized =
+                (value - min)
+                / (max - min);
+
+
+            const y =
+                height -
+                normalized * height;
+
+
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+
+        }
+    );
+
+
+    ctx.strokeStyle =
+        currentFault === "thermal_excursion"
+            ? "#ff5263"
+            : "#35d9ff";
+
+    ctx.lineWidth = 2;
+
+    ctx.shadowBlur = 8;
+
+    ctx.shadowColor =
+        currentFault === "thermal_excursion"
+            ? "#ff5263"
+            : "#35d9ff";
+
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+
+
+    /* THRESHOLD */
+
+    const threshold =
+        height -
+        ((55 - min) / (max - min))
+        * height;
+
+
+    ctx.setLineDash([5, 5]);
+
+    ctx.strokeStyle = "#ff5263";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        0,
+        threshold
+    );
+
+    ctx.lineTo(
+        width,
+        threshold
+    );
+
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+
+    ctx.fillStyle =
+        isLight
+            ? "#637187"
+            : "#8294ad";
+
+    ctx.font = "10px monospace";
+
+    ctx.fillText(
+        "THERMAL LIMIT 55°C",
+        10,
+        Math.max(
+            12,
+            threshold - 5
+        )
+    );
+
+}
+
+
+window.addEventListener(
+    "resize",
+    drawTelemetry
+);
+
+
+/* =============================================================
+   FAULT INJECTION
+============================================================= */
+
+function runSelectedFault() {
+
+    const fault =
+        document.getElementById(
+            "faultSelector"
+        ).value;
+
+    injectFault(fault);
+
+}
+
+
+function injectFault(fault) {
+
+    currentFault = fault;
+
+
+    const names = {
+
+        thermal_excursion:
+            "THERMAL EXCURSION",
+
+        packet_loss:
+            "COMMUNICATION PACKET LOSS",
+
+        sensor_drift:
+            "TEMPERATURE SENSOR DRIFT",
+
+        power_drop:
+            "BATTERY POWER DROP",
+
+        actuator_failure:
+            "POINTING ACTUATOR FAILURE"
+
+    };
+
+
+    document.getElementById(
+        "simulationStatus"
+    ).textContent =
+        names[fault] || "FAULT ACTIVE";
+
+
+    addLog(
+        "FAULT",
+        "Injected simulated fault: "
+        + names[fault],
+        "warning"
+    );
+
+
+    showAnomaly(fault);
+
+}
+
+
+function clearFault() {
+
+    currentFault = null;
+
+    document.getElementById(
+        "simulationStatus"
+    ).textContent =
+        "NOMINAL MISSION";
+
+
+    clearAnomaly();
+
+
+    addLog(
+        "FAULT",
+        "Fault cleared. Digital twin returning to nominal.",
+        "success"
+    );
+
+}
+
+
+function showAnomaly(fault) {
+
+    const container =
+        document.getElementById(
+            "diagnosisContainer"
+        );
+
+
+    const indicator =
+        document.getElementById(
+            "anomalyIndicator"
+        );
+
+
+    indicator.textContent =
+        "ANOMALY DETECTED";
+
+    indicator.className =
+        "badge critical";
+
+
+    let title =
+        "Unknown anomaly";
+
+    let confidence = 75;
+
+    let hypotheses = [];
+
+
+    if (fault === "thermal_excursion") {
+
+        title =
+            "⚠ Thermal excursion";
+
+        confidence = 87;
+
+        hypotheses = [
+
+            ["Instrument thermal load", "87%"],
+            ["Radiator degradation", "61%"],
+            ["Sensor drift", "34%"]
+
+        ];
+
+    }
+
+
+    if (fault === "packet_loss") {
+
+        title =
+            "⚠ Communication packet loss";
+
+        confidence = 91;
+
+        hypotheses = [
+
+            ["Ground link degradation", "91%"],
+            ["Antenna pointing error", "54%"],
+            ["Network congestion", "31%"]
+
+        ];
+
+    }
+
+
+    if (fault === "sensor_drift") {
+
+        title =
+            "⚠ Conflicting thermal sensor data";
+
+        confidence = 79;
+
+        hypotheses = [
+
+            ["Temperature sensor drift", "79%"],
+            ["Actual thermal event", "42%"],
+            ["ADC calibration error", "29%"]
+
+        ];
+
+    }
+
+
+    if (fault === "power_drop") {
+
+        title =
+            "⚠ Battery power excursion";
+
+        confidence = 89;
+
+        hypotheses = [
+
+            ["Unexpected subsystem load", "89%"],
+            ["Battery degradation", "57%"],
+            ["Power sensor fault", "28%"]
+
+        ];
+
+    }
+
+
+    if (fault === "actuator_failure") {
+
+        title =
+            "⚠ Pointing actuator anomaly";
+
+        confidence = 93;
+
+        hypotheses = [
+
+            ["Actuator failure", "93%"],
+            ["Control loop instability", "48%"],
+            ["Attitude sensor disagreement", "37%"]
+
+        ];
+
+    }
+
+
+    container.innerHTML = `
+
+        <div class="anomaly-box">
+
+            <div class="anomaly-title">
+
+                <span>${title}</span>
+
+                <span>
+                    ${confidence}%
+                </span>
+
+            </div>
+
+
+            <div class="confidence">
+
+                <div class="confidence-header">
+
+                    <span>
+                        Diagnostic Confidence
+                    </span>
+
+                    <strong>
+                        ${confidence}%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        style="width:${confidence}%">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div style="
+            margin-top:12px;
+            font-size:10px;
+            color:var(--muted);
+        ">
+
+            COMPETING HYPOTHESES
+
+        </div>
+
+
+        ${hypotheses.map(h => `
+
+            <div class="hypothesis">
+
+                <span>
+                    ${h[0]}
+                </span>
+
+                <span class="hypothesis-score">
+                    ${h[1]}
+                </span>
+
+            </div>
+
+        `).join("")}
+
+
+        <button
+            class="btn btn-warning"
+            onclick="previewProcedure()">
+
+            Review Recommended Procedure
+
+        </button>
+
+    `;
+
+
+    document.getElementById(
+        "satMode"
+    ).textContent =
+        "ANOMALY";
+
+
+    document.getElementById(
+        "satMode"
+    ).className =
+        "badge critical";
+
+
+    document.getElementById(
+        "operationMode"
+    ).textContent =
+        "SAFE REVIEW";
+
+
+    document.getElementById(
+        "thermalTrend"
+    ).textContent =
+        "ABNORMAL";
+
+}
+
+
+/* =============================================================
+   CLEAR ANOMALY
+============================================================= */
+
+function clearAnomaly() {
+
+    document.getElementById(
+        "anomalyIndicator"
+    ).textContent =
+        "NO ACTIVE ANOMALY";
+
+
+    document.getElementById(
+        "anomalyIndicator"
+    ).className =
+        "badge nominal";
+
+
+    document.getElementById(
+        "diagnosisContainer"
+    ).innerHTML = `
+
+        <div style="
+            padding:15px;
+            color:var(--muted);
+            text-align:center;
+            font-size:11px;
+        ">
+
+            All spacecraft subsystems nominal.
+
+        </div>
+
+    `;
+
+
+    document.getElementById(
+        "satMode"
+    ).textContent =
+        "NOMINAL";
+
+
+    document.getElementById(
+        "satMode"
+    ).className =
+        "badge nominal";
+
+
+    document.getElementById(
+        "operationMode"
+    ).textContent =
+        "NOMINAL";
+
+
+    document.getElementById(
+        "thermalTrend"
+    ).textContent =
+        "+0.02 °C/min";
+
+}
+
+
+/* =============================================================
+   PROCEDURE PREVIEW
+============================================================= */
+
+function previewProcedure() {
+
+    addLog(
+        "PROCEDURE",
+        "PROC-THERMAL-RECOVERY-03 preview requested.",
+        "system"
+    );
+
+
+    alert(
+        "SIMULATION PROCEDURE PREVIEW\n\n"
+        + "PROC-THERMAL-RECOVERY-03\n\n"
+        + "Step 1: Verify sensor agreement\n"
+        + "Step 2: Reduce simulated instrument load\n"
+        + "Step 3: Enter controlled thermal recovery\n"
+        + "Step 4: Validate thermal stabilization\n\n"
+        + "No command has been executed."
+    );
+
+}
+
+
+/* =============================================================
+   AUDIT LOG
+============================================================= */
+
+function addLog(
+    source,
+    message,
+    type = "system"
+) {
+
+    const log =
+        document.getElementById(
+            "auditLog"
+        );
+
+
+    const elapsed =
+        formatMissionTime(
+            missionSeconds
+        ).replace("T+", "");
+
+
+    let className =
+        "log-system";
+
+
+    if (type === "success") {
+        className = "log-success";
+    }
+
+    if (type === "warning") {
+        className = "log-warning";
+    }
+
+    if (type === "error") {
+        className = "log-error";
+    }
+
+
+    const entry =
+        document.createElement("div");
+
+
+    entry.className =
+        "log-entry";
+
+
+    entry.innerHTML = `
+
+        <span class="log-time">
+            [${elapsed}]
+        </span>
+
+        <span class="${className}">
+            [${source}]
+        </span>
+
+        ${message}
+
+    `;
+
+
+    log.appendChild(entry);
+
+    log.scrollTop =
+        log.scrollHeight;
+
+}
+
+
+/* =============================================================
+   BACKEND API
+============================================================= */
+
+async function apiCallRequestPasskey() {
+
+    const email =
+        document.getElementById(
+            "operatorEmail"
+        ).value.trim();
+
+
+    if (!email) {
+
+        alert(
+            "Please enter an operator email."
+        );
+
+        return;
+
+    }
+
+
+    addLog(
+        "API",
+        "Requesting OOB verification code for "
+        + email,
+        "system"
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/auth/request-passkey",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        email: email
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail ||
+                "Unable to request verification code."
+            );
+
+        }
+
+
+        addLog(
+            "SMTP",
+            "OOB verification request accepted.",
+            "success"
+        );
+
+
+        alert(
+            "Verification code requested.\n\n"
+            + "Check the configured email inbox."
+        );
+
+
+    } catch (error) {
+
+        addLog(
+            "API",
+            error.message,
+            "error"
+        );
+
+
+        alert(
+            "API Error: "
+            + error.message
+        );
+
+    }
+
+}
+
+
+/* =============================================================
+   VERIFY 2SV
+============================================================= */
+
+async function apiCallVerify2SV() {
+
+    const email =
+        document.getElementById(
+            "operatorEmail"
+        ).value.trim();
+
+
+    const code =
+        document.getElementById(
+            "twoStepCode"
+        ).value.trim();
+
+
+    if (!email || !code) {
+
+        alert(
+            "Enter both email and verification code."
+        );
+
+        return;
+
+    }
+
+
+    addLog(
+        "AUTH",
+        "Submitting 2SV verification request.",
+        "system"
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/auth/verify-2sv",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        email: email,
+
+                        code: code
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail ||
+                "Authentication failed."
+            );
+
+        }
+
+
+        jwtToken =
+            data.token;
+
+
+        document.getElementById(
+            "securityStatusBadge"
+        ).textContent =
+            "JWT SESSION VERIFIED";
+
+
+        document.getElementById(
+            "securityStatusBadge"
+        ).className =
+            "badge nominal";
+
+
+        document.getElementById(
+            "authorityStatus"
+        ).textContent =
+            "● VERIFIED";
+
+
+        document.getElementById(
+            "authorityEmail"
+        ).textContent =
+            email;
+
+
+        document.getElementById(
+            "authBtn"
+        ).disabled =
+            false;
+
+
+        addLog(
+            "AUTH",
+            "Operator identity verified. JWT session established.",
+            "success"
+        );
+
+
+        alert(
+            "Authentication successful."
+        );
+
+
+    } catch (error) {
+
+        jwtToken = null;
+
+
+        addLog(
+            "AUTH",
+            error.message,
+            "error"
+        );
+
+
+        alert(
+            "Authentication failed: "
+            + error.message
+        );
+
+    }
+
+}
+
+
+/* =============================================================
+   EXECUTE SIMULATED PROCEDURE
+============================================================= */
+
+async function apiExecuteProcedure() {
+
+    if (!jwtToken) {
+
+        alert(
+            "Operator verification required."
+        );
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            "APPROVAL GATE\n\n"
+            + "You are about to execute the "
+            + "simulated procedure.\n\n"
+            + "PROC-THERMAL-RECOVERY-03\n\n"
+            + "This action remains inside the digital twin.\n\n"
+            + "Continue?"
+        );
+
+
+    if (!confirmed) {
+
+        addLog(
+            "AUTHORITY",
+            "Operator declined procedure execution.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    addLog(
+        "COMMAND",
+        "Submitting approved procedure to simulation backend.",
+        "system"
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/mission/execute",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + jwtToken,
+
+                        "Content-Type":
+                            "application/json"
+
+                    }
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail ||
+                "Procedure execution failed."
+            );
+
+        }
+
+
+        addLog(
+            "COMMAND",
+            data.message ||
+            "Simulated procedure executed successfully.",
+            "success"
+        );
+
+
+        alert(
+            "SIMULATION RESULT\n\n"
+            + "Procedure executed successfully."
+        );
+
+
+    } catch (error) {
+
+        addLog(
+            "COMMAND",
+            error.message,
+            "error"
+        );
+
+
+        alert(
+            "Execution failed: "
+            + error.message
+        );
+
+    }
+
+}
+
+
+/* =============================================================
+   INITIALIZATION
+============================================================= */
+
+applyTheme();
+
+updateTelemetryUI();
+
+drawTelemetry();
+
+addLog(
+    "SYSTEM",
+    "Operator console initialized.",
+    "success"
+);
+
+addLog(
+    "SAFETY",
+    "Simulation-only command boundary active.",
+    "system"
+);
+
+
+</script>
+
+</body>
+</html>
+
